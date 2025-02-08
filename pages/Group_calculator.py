@@ -289,7 +289,7 @@ def calculate_upper_bound_90(predicted_height_cm, rounded_age):
     except:
         return predicted_height_cm  # Return original value if any error occurs
 
-
+#####################################################################################
 
 st.set_page_config(layout="wide")
 
@@ -411,7 +411,8 @@ if uploaded_file is not None:
             
             # Calculate predictions and status
             midparent_height_cm = calculate_midparent_height_cm(adjusted_mother_height_cm, adjusted_father_height_cm)
-            midparent_coefficient = get_midparent_coefficient(midparent_height_cm)
+            midparent_coefficient = get_midparent_coefficient(gender, rounded_age_val)
+
             intersect_val = get_intersect(height_coefficient, weight_coefficient, midparent_coefficient)
             predicted_height_cm = calculate_predicted_adult_height_cm(intersect_val)
             percent_predicted_height = calculate_percent_predicted_height(standing_height_cm, predicted_height_cm)
