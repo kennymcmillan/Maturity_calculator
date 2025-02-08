@@ -94,6 +94,19 @@ if uploaded_file:
     st.write("### Uploaded Data Preview:")
     st.dataframe(df.head())  # Show first few rows for validation
 
+    # Parse dates explicitly
+    df["Date of Birth"] = pd.to_datetime(df["Date of Birth"], format="%d-%m-%Y", errors="coerce")
+    df["Test Date"] = pd.to_datetime(df["Test Date"], format="%d-%m-%Y", errors="coerce")
+
+    # Swap columns if needed
+    if (df["Date of Birth"] > df["Test Date"]).any():
+        st.warning("Swapping 'Date of Birth' and 'Test Date' columns due to incorrect mapping.")
+        df["Date of Birth"], df["Test Date"] = df["Test Date"], df["Date of Birth"]
+
+    # Validate the corrected dates
+    st.write("### Corrected Data Preview:")
+    st.dataframe(df.head())
+
     # Perform Calculations for Each Individual
     results = []
     for index, row in df.iterrows():
@@ -102,16 +115,14 @@ if uploaded_file:
             name = row["Name"]
             gender = row["Gender"]
 
-            # Explicitly parse the dates with dayfirst=True
-            dob = pd.to_datetime(row["Date of Birth"], format="%d-%m-%Y", errors="coerce")
-            test_date = pd.to_datetime(row["Test Date"], format="%d-%m-%Y", errors="coerce")
+            dob = row["Date of Birth"]
+            test_date = row["Test Date"]
 
-            # Validate dates
+            # Validate the parsed dates
             if pd.isna(dob) or pd.isna(test_date):
                 st.warning(f"Invalid date format in row {index + 1}: DOB={row['Date of Birth']}, Test Date={row['Test Date']}")
                 continue  # Skip this row
 
-            # Parse numerical fields
             body_mass_kg = float(row["Body Mass (kg)"])
             standing_height_cm = float(row["Standing Height (cm)"])
             mothers_height_cm = float(row["Mother's Height (cm)"])
