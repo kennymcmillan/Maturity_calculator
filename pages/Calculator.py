@@ -308,7 +308,61 @@ errors_df, sa_df, metrics_df = load_all_data()
 
 # Streamlit UI
 
-st.title('Maturation Calculator')
+# Define LTAD brand colors
+DARK_BLUE = "#0F1B34"
+GREEN = "#23FF00"
+WHITE = "#FFFFFF"
+GREY = "#9F9F9F"
+
+# Custom CSS for styling
+st.markdown(
+    f"""
+    <style>
+        .stApp {{
+            background-color: {DARK_BLUE} !important;
+            color: {WHITE} !important;
+        }}
+        .main-header {{
+            font-size: 42px !important;
+            color: {GREEN} !important;
+            text-align: center;
+            font-family: Helvetica, sans-serif;
+        }}
+        .sub-header {{
+            font-size: 24px !important;
+            color: {GREEN};
+            text-align: center;
+            font-family: Helvetica, sans-serif;
+        }}
+        .stButton > button {{
+            background-color: {GREEN} !important;
+            color: {DARK_BLUE} !important;
+            font-weight: bold;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }}
+        .stButton > button:hover {{
+            background-color: {WHITE} !important;
+            color: {DARK_BLUE} !important;
+        }}
+        .stMarkdown p, .stMarkdown div {{
+            color: {WHITE} !important;
+            text-align: center;
+            font-family: Helvetica, sans-serif;
+            font-size: 18px;
+        }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Page Title
+st.markdown('<h1 class="main-header">Maturation Calculator</h1>', unsafe_allow_html=True)
+
+#st.title('Maturation Calculator')
 
 # Sidebar inputs
 st.sidebar.header('Input Parameters')
