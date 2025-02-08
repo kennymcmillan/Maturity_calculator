@@ -89,8 +89,13 @@ st.markdown('<h1 class="main-header">Group Calculator</h1>', unsafe_allow_html=T
 uploaded_file = st.file_uploader("Upload Completed Template", type=["csv"])
 
 if uploaded_file:
-    # Read the uploaded CSV file
-    df = pd.read_csv(uploaded_file, dtype=str)  # Treat all columns as strings initially
+    try:
+        # Attempt to read the uploaded CSV file with UTF-8 encoding
+        df = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8")
+    except UnicodeDecodeError:
+        # Fallback to latin-1 encoding if UTF-8 fails
+        df = pd.read_csv(uploaded_file, dtype=str, encoding="latin-1")
+    
     st.write("### Uploaded Data Preview:")
     st.dataframe(df.head())  # Show first few rows for validation
 
