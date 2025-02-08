@@ -367,6 +367,7 @@ st.markdown('<h1 class="main-header">Maturation Calculator</h1>', unsafe_allow_h
 # Sidebar inputs
 st.sidebar.header('Input Parameters')
 
+name = st.sidebar.text_input("Name")
 gender = st.sidebar.selectbox('Gender', ['Male', 'Female'])
 test_date = st.sidebar.date_input('Test Date', datetime.now().date())
 dob = st.sidebar.date_input('Date of Birth', datetime.now().date() - pd.Timedelta(days=365*14))
@@ -452,6 +453,7 @@ with col2:
 
 # Download button
 results_dict = {
+    'Name': name,
     'Gender': gender,
     'Test Date': test_date.strftime('%Y-%m-%d'),
     'Date of Birth': dob.strftime('%Y-%m-%d'),
