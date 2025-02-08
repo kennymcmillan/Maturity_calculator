@@ -79,6 +79,18 @@ st.markdown(
 
 ############################################################################
 
+# Load shared data
+@st.cache_data
+def load_all_data():
+    errors_df = pd.read_excel('Maturation_calculator.xlsx', sheet_name='Errors')
+    sa_df = pd.read_excel('Maturation_calculator.xlsx', sheet_name='SA')
+    metrics_df = pd.read_excel('Maturation_calculator.xlsx', sheet_name='Metric coefficients')
+    return errors_df, sa_df, metrics_df
+
+errors_df, sa_df, metrics_df = load_all_data()
+
+############################################################################
+
 # Sidebar: Group Template
 st.sidebar.header("Group Calculator")
 st.sidebar.write("Download this template to add your data for many individuals.")
