@@ -357,7 +357,7 @@ if uploaded_file is not None:
     
     # Create CSV data and add a download button
     csv_data = results_df.to_csv(index=False).encode('utf-8')
-    st.download_button(
+    st.sidebar.download_button(
         label="Download Results as CSV",
         data=csv_data,
         file_name="maturation_results.csv",
