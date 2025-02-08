@@ -1,4 +1,7 @@
 # Complete module of all validated functions so far
+import pandas as pd
+
+
 def chronological_age(dob, test_date):
     """Excel: =IF(C2="","",YEARFRAC(C2,D2))"""
     if pd.isna(dob) or pd.isna(test_date):
