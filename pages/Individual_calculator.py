@@ -156,7 +156,7 @@ with col2:
     st.markdown('<h2 class="section-title">Maturity Assessment</h2>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Maturity Status: {maturity_status_val}</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Timing: {timing_val}</p>', unsafe_allow_html=True)
-    st.markdown(f'<p class="result-text">Alt. Timing: {alt_timing_val}</p>', unsafe_allow_html=True)
+   # st.markdown(f'<p class="result-text">Alt. Timing: {alt_timing_val}</p>', unsafe_allow_html=True)
 
     st.markdown('<h2 class="section-title">Height Bounds</h2>', unsafe_allow_html=True)
     st.markdown('<h3 class="sub-section-title">50% Confidence Interval</h3>', unsafe_allow_html=True)
