@@ -92,6 +92,12 @@ standing_height_cm = st.sidebar.number_input('Standing Height (cm)', value=160.0
 mothers_height_cm = st.sidebar.number_input("Mother's Height (cm)", value=165.0, format="%.1f")
 fathers_height_cm = st.sidebar.number_input("Father's Height (cm)", value=180.0, format="%.1f")
 
+# Validate input before performing calculations
+if dob and test_date:
+    chronological_age_val = (test_date - dob).days / 365.25
+else:
+    chronological_age_val = None
+
 chronological_age_val = chronological_age(dob, test_date)
 rounded_age_val = rounded_age(chronological_age_val)
 weight_lbs = kg_to_lbs(body_mass_kg)
