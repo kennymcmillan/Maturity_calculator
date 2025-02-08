@@ -74,23 +74,23 @@ st.markdown(
 # Sidebar: Group Template
 st.sidebar.header("Group Calculator")
 st.sidebar.write("Download this template to add your data for many individuals.")
-with open("Group_template.xlsx", "rb") as template_file:
+with open("Group_template.csv", "rb") as template_file:
     st.sidebar.download_button(
         label="Download Template",
         data=template_file,
-        file_name="Group_template.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        file_name="Group_template.csv",
+        mime="text/csv"
     )
 
 # Page Title
 st.markdown('<h1 class="main-header">Group Calculator</h1>', unsafe_allow_html=True)
 
 # Upload Template
-uploaded_file = st.file_uploader("Upload Completed Template", type=["xlsx"])
+uploaded_file = st.file_uploader("Upload Completed Template", type=["csv"])
 
 if uploaded_file:
-    # Read the uploaded file
-    df = pd.read_excel(uploaded_file, dtype=str)  # Treat all columns as strings initially
+    # Read the uploaded CSV file
+    df = pd.read_csv(uploaded_file, dtype=str)  # Treat all columns as strings initially
     st.write("### Uploaded Data Preview:")
     st.dataframe(df.head())  # Show first few rows for validation
 
@@ -98,7 +98,7 @@ if uploaded_file:
     df["Date of Birth"] = pd.to_datetime(df["Date of Birth"], format="%d/%m/%Y", errors="coerce")
     df["Test Date"] = pd.to_datetime(df["Test Date"], format="%d/%m/%Y", errors="coerce")
 
-    # Convert dates to yyyy-mm-dd for calculations
+    # Validate parsed dates and convert them to yyyy-mm-dd for calculations
     df["Date of Birth"] = df["Date of Birth"].dt.strftime("%Y-%m-%d")
     df["Test Date"] = df["Test Date"].dt.strftime("%Y-%m-%d")
 
@@ -110,7 +110,7 @@ if uploaded_file:
     results = []
     for index, row in df.iterrows():
         try:
-            # Read the input data from the uploaded Excel file
+            # Read the input data from the uploaded CSV file
             name = row["Name"]
             gender = row["Gender"]
 
