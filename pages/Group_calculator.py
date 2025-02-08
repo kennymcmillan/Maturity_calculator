@@ -94,9 +94,9 @@ if uploaded_file:
     st.write("### Uploaded Data Preview:")
     st.dataframe(df.head())  # Show first few rows for validation
 
-    # Parse dates explicitly
-    df["Date of Birth"] = pd.to_datetime(df["Date of Birth"], format="%d-%m-%Y", errors="coerce")
-    df["Test Date"] = pd.to_datetime(df["Test Date"], format="%d-%m-%Y", errors="coerce")
+    # Parse dates explicitly for dd/mm/yyyy format
+    df["Date of Birth"] = pd.to_datetime(df["Date of Birth"], format="%d/%m/%Y", errors="coerce")
+    df["Test Date"] = pd.to_datetime(df["Test Date"], format="%d/%m/%Y", errors="coerce")
 
     # Swap columns if needed
     if (df["Date of Birth"] > df["Test Date"]).any():
