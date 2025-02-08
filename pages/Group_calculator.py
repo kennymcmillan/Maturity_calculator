@@ -392,10 +392,10 @@ if uploaded_file is not None:
             gender = row['Gender']
             dob = pd.to_datetime(row['Date of Birth'])
             test_date = pd.to_datetime(row['Test Date'])
-            body_mass_kg = float(row['Body Mass (kg)'])
-            standing_height_cm = float(row['Standing Height (cm)'])
-            mothers_height_cm = float(row["Mother's Height (cm)"])
-            fathers_height_cm = float(row["Father's Height (cm)"])
+            body_mass_kg = pd.to_numeric(row['Body Mass (kg)'], errors='coerce')
+            standing_height_cm = pd.to_numeric(row['Standing Height (cm)'], errors='coerce')
+            mothers_height_cm = pd.to_numeric(row["Mother's Height (cm)"], errors='coerce')
+            fathers_height_cm = pd.to_numeric(row["Father's Height (cm)"], errors='coerce')
 
             # Calculate initial age values
             chronological_age_val = chronological_age(dob, test_date)
