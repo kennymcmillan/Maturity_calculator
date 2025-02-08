@@ -65,23 +65,14 @@ st.markdown(
             text-align: center;
             margin-bottom: 40px;
         }}
-        .result-box {{
-            border: 2px solid {GREEN};
-            border-radius: 10px;
-            background-color: #1A2538;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }}
-        .result-box h2 {{
+        .section-title {{
             font-size: 24px;
             color: {GREEN};
             margin-bottom: 15px;
         }}
-        .result-box p {{
+        .result-text {{
             font-size: 18px;
-            color: {WHITE};
-            margin: 5px 0;
+            margin-bottom: 10px;
         }}
         .stDownloadButton > button {{
             background-color: {GREEN} !important;
@@ -141,37 +132,33 @@ upper_50 = calculate_upper_bound_50(predicted_height_cm, rounded_age_val)
 lower_90 = calculate_lower_bound_90(predicted_height_cm, rounded_age_val)
 upper_90 = calculate_upper_bound_90(predicted_height_cm, rounded_age_val)
 
-# Results Display
-st.markdown('<div class="result-box">', unsafe_allow_html=True)
-st.markdown('<h2>Age Calculations</h2>', unsafe_allow_html=True)
-st.markdown(f'<p>Chronological Age: {chronological_age_val:.2f}</p>', unsafe_allow_html=True)
-st.markdown(f'<p>Biological Age: {biological_age_val:.2f}</p>', unsafe_allow_html=True)
-st.markdown(f'<p>BA-CA: {ba_ca_val:.2f}</p>', unsafe_allow_html=True)
-st.markdown(f'<p>Rounded Age: {rounded_age_val:.1f}</p>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+# Results Display in Two Columns
+col1, col2 = st.columns(2)
 
-st.markdown('<div class="result-box">', unsafe_allow_html=True)
-st.markdown('<h2>Height Predictions</h2>', unsafe_allow_html=True)
-st.markdown(f'<p>Predicted Adult Height: {predicted_height_cm:.1f} cm</p>', unsafe_allow_html=True)
-st.markdown(f'<p>Percent of Adult Height: {percent_predicted_height:.1f}%</p>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+with col1:
+    st.markdown('<h2 class="section-title">Age Calculations</h2>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Chronological Age: {chronological_age_val:.2f}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Biological Age: {biological_age_val:.2f}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">BA-CA: {ba_ca_val:.2f}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Rounded Age: {rounded_age_val:.1f}</p>', unsafe_allow_html=True)
 
-st.markdown('<div class="result-box">', unsafe_allow_html=True)
-st.markdown('<h2>Maturity Assessment</h2>', unsafe_allow_html=True)
-st.markdown(f'<p>Maturity Status: {maturity_status_val}</p>', unsafe_allow_html=True)
-st.markdown(f'<p>Timing: {timing_val}</p>', unsafe_allow_html=True)
-st.markdown(f'<p>Alt. Timing: {alt_timing_val}</p>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<h2 class="section-title">Height Predictions</h2>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Predicted Adult Height: {predicted_height_cm:.1f} cm</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Percent of Adult Height: {percent_predicted_height:.1f}%</p>', unsafe_allow_html=True)
 
-st.markdown('<div class="result-box">', unsafe_allow_html=True)
-st.markdown('<h2>Height Bounds</h2>', unsafe_allow_html=True)
-st.markdown('<h3>50% Confidence Interval</h3>', unsafe_allow_html=True)
-st.markdown(f'<p>Lower: {lower_50:.1f} cm</p>', unsafe_allow_html=True)
-st.markdown(f'<p>Upper: {upper_50:.1f} cm</p>', unsafe_allow_html=True)
-st.markdown('<h3>90% Confidence Interval</h3>', unsafe_allow_html=True)
-st.markdown(f'<p>Lower: {lower_90:.1f} cm</p>', unsafe_allow_html=True)
-st.markdown(f'<p>Upper: {upper_90:.1f} cm</p>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+with col2:
+    st.markdown('<h2 class="section-title">Maturity Assessment</h2>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Maturity Status: {maturity_status_val}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Timing: {timing_val}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Alt. Timing: {alt_timing_val}</p>', unsafe_allow_html=True)
+
+    st.markdown('<h2 class="section-title">Height Bounds</h2>', unsafe_allow_html=True)
+    st.markdown('<h3>50% Confidence Interval</h3>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Lower: {lower_50:.1f} cm</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Upper: {upper_50:.1f} cm</p>', unsafe_allow_html=True)
+    st.markdown('<h3>90% Confidence Interval</h3>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Lower: {lower_90:.1f} cm</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="result-text">Upper: {upper_90:.1f} cm</p>', unsafe_allow_html=True)
 
 # Download Button
 results_dict = {
