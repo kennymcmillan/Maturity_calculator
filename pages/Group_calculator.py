@@ -413,7 +413,7 @@ if uploaded_file is not None:
             midparent_height_cm = calculate_midparent_height_cm(adjusted_mother_height_cm, adjusted_father_height_cm)
             midparent_coefficient = get_midparent_coefficient(gender, rounded_age_val)
 
-            intersect_val = get_intersect(height_coefficient, weight_coefficient, midparent_coefficient)
+            intersect_val = get_intersect(gender, rounded_age_val)
             predicted_height_cm = calculate_predicted_adult_height_cm(intersect_val)
             percent_predicted_height = calculate_percent_predicted_height(standing_height_cm, predicted_height_cm)
             biological_age_val = calculate_biological_age(percent_predicted_height)
