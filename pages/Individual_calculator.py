@@ -409,7 +409,7 @@ with col1:
     st.markdown(f'<p class="result-text">Chronological Age: {chronological_age_val:.2f}</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Biological Age: {biological_age_val:.2f}</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">BA-CA: {ba_ca_val:.2f}</p>', unsafe_allow_html=True)
-    st.markdown(f'<p class="result-text">Rounded Age: {rounded_age_val:.1f}</p>', unsafe_allow_html=True)
+    #st.markdown(f'<p class="result-text">Rounded Age: {rounded_age_val:.1f}</p>', unsafe_allow_html=True)
 
     st.markdown('<h2 class="section-title">Height Predictions</h2>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Predicted Adult Height: {predicted_height_cm:.1f} cm</p>', unsafe_allow_html=True)
@@ -422,10 +422,10 @@ with col2:
    # st.markdown(f'<p class="result-text">Alt. Timing: {alt_timing_val}</p>', unsafe_allow_html=True)
 
     st.markdown('<h2 class="section-title">Height Bounds</h2>', unsafe_allow_html=True)
-    st.markdown('<h3 class="sub-section-title">50% Confidence Interval</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="sub-section-title">50% Confidence Interval</h4>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Lower: {lower_50:.1f} cm</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Upper: {upper_50:.1f} cm</p>', unsafe_allow_html=True)
-    st.markdown('<h3 class="sub-section-title">90% Confidence Interval</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="sub-section-title">90% Confidence Interval</h4>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Lower: {lower_90:.1f} cm</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Upper: {upper_90:.1f} cm</p>', unsafe_allow_html=True)
 
