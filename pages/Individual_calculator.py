@@ -70,6 +70,12 @@ st.markdown(
             color: {GREEN};
             margin-bottom: 15px;
         }}
+        .sub-section-title {{
+            font-size: 20px;
+            color: {WHITE};
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }}
         .result-text {{
             font-size: 18px;
             margin-bottom: 10px;
@@ -153,10 +159,10 @@ with col2:
     st.markdown(f'<p class="result-text">Alt. Timing: {alt_timing_val}</p>', unsafe_allow_html=True)
 
     st.markdown('<h2 class="section-title">Height Bounds</h2>', unsafe_allow_html=True)
-    st.markdown('<h3>50% Confidence Interval</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="sub-section-title">50% Confidence Interval</h3>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Lower: {lower_50:.1f} cm</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Upper: {upper_50:.1f} cm</p>', unsafe_allow_html=True)
-    st.markdown('<h3>90% Confidence Interval</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="sub-section-title">90% Confidence Interval</h3>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Lower: {lower_90:.1f} cm</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="result-text">Upper: {upper_90:.1f} cm</p>', unsafe_allow_html=True)
 
@@ -192,3 +198,4 @@ st.download_button(
     file_name="maturation_results.csv",
     mime="text/csv"
 )
+
