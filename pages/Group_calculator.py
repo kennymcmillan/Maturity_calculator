@@ -1,3 +1,5 @@
+# First create a complete version of the code
+
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -71,6 +73,21 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+def validate_and_fix_dates(df):
+    """Validate and fix dates in the dataframe to ensure test_date > date_of_birth"""
+    def validate_dates(row):
+        dob = pd.to_datetime(row['Date of Birth'])
+        test_date = pd.to_datetime(row['Test Date'])
+        if test_date < dob:
+            return pd.Series({
+                'Date of Birth': test_date,
+                'Test Date': dob
+            })
+        return row[['Date of Birth', 'Test Date']]
+    
+    df[['Date of Birth', 'Test Date']] = df.apply(validate_dates, axis=1)
+    return df
+
 # Sidebar: Group Template
 st.sidebar.header("Group Calculator")
 st.sidebar.write("Download this template to add your data for many individuals.")
@@ -78,90 +95,58 @@ with open("Group_template.csv", "rb") as template_file:
     st.sidebar.download_button(
         label="Download Template",
         data=template_file,
-        file_name="Group_template.csv",
+        file_name="group_template.csv",
         mime="text/csv"
     )
 
-# Page Title
+# Main Content
 st.markdown('<h1 class="main-header">Group Calculator</h1>', unsafe_allow_html=True)
 
-# Upload Template
-uploaded_file = st.file_uploader("Upload Completed Template", type=["csv"])
+# File Upload
+uploaded_file = st.file_uploader("Upload your CSV file", type=['csv'])
 
-if uploaded_file:
-    try:
-        # Attempt to read the uploaded CSV file with UTF-8 encoding
-        df = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8")
-    except UnicodeDecodeError:
-        # Fallback to latin-1 encoding if UTF-8 fails
-        df = pd.read_csv(uploaded_file, dtype=str, encoding="latin-1")
+if uploaded_file is not None:
+    # Read CSV
+    df = pd.read_csv(uploaded_file)
     
-    st.write("### Uploaded Data Preview:")
-    st.dataframe(df.head())  # Show first few rows for validation
-
-    # Explicit date parsing for dd/mm/yyyy format
-    try:
-        df["Date of Birth"] = pd.to_datetime(df["Date of Birth"], format="%d/%m/%Y", errors="coerce")
-        df["Test Date"] = pd.to_datetime(df["Test Date"], format="%d/%m/%Y", errors="coerce")
-    except Exception as e:
-        st.error(f"Error parsing dates: {e}")
-        st.stop()
-
-    # Check for any rows with invalid dates
-    if df["Date of Birth"].isna().any() or df["Test Date"].isna().any():
-        st.warning("Some rows have invalid date formats. These rows will be skipped.")
-        st.write("Invalid Rows:")
-        st.dataframe(df[df["Date of Birth"].isna() | df["Test Date"].isna()])
-        # Drop rows with invalid dates
-        df = df.dropna(subset=["Date of Birth", "Test Date"])
-
-    # Convert dates to yyyy-mm-dd format for calculations
-    df["Date of Birth"] = df["Date of Birth"].dt.strftime("%Y-%m-%d")
-    df["Test Date"] = df["Test Date"].dt.strftime("%Y-%m-%d")
-
-    # Validate corrected dates
-    st.write("### Corrected Data Preview:")
-    st.dataframe(df.head())
-
-    # Perform Calculations for Each Individual
+    # Validate and fix dates
+    df = validate_and_fix_dates(df)
+    
+    # Process Data
     results = []
+    
     for index, row in df.iterrows():
         try:
-            # Read the input data from the uploaded CSV file
-            name = row["Name"]
-            gender = row["Gender"]
-
-            dob = pd.to_datetime(row["Date of Birth"], format="%Y-%m-%d")
-            test_date = pd.to_datetime(row["Test Date"], format="%Y-%m-%d")
-
-            # Validate the parsed dates
-            if pd.isna(dob) or pd.isna(test_date):
-                st.warning(f"Invalid date format in row {index + 1}: DOB={row['Date of Birth']}, Test Date={row['Test Date']}")
-                continue  # Skip this row
-
-            body_mass_kg = float(row["Body Mass (kg)"])
-            standing_height_cm = float(row["Standing Height (cm)"])
+            # Extract Data
+            name = row['Name']
+            gender = row['Gender']
+            dob = pd.to_datetime(row['Date of Birth'])
+            test_date = pd.to_datetime(row['Test Date'])
+            body_mass_kg = float(row['Body Mass (kg)'])
+            standing_height_cm = float(row['Standing Height (cm)'])
             mothers_height_cm = float(row["Mother's Height (cm)"])
             fathers_height_cm = float(row["Father's Height (cm)"])
 
-            # Perform Calculations
+            # Calculate Values
             chronological_age_val = chronological_age(dob, test_date)
             rounded_age_val = rounded_age(chronological_age_val)
-            height_coef = get_height_coefficient(gender, rounded_age_val)
-            weight_coef = get_weight_coefficient(gender, rounded_age_val)
-            mother_height_inches = cm_to_inches(mothers_height_cm)
-            father_height_inches = cm_to_inches(fathers_height_cm)
-            adj_mother_cm = inches_to_cm(adjust_mother_height_inches(mother_height_inches))
-            adj_father_cm = inches_to_cm(adjust_father_height_inches(father_height_inches))
-            midparent_height_cm = calculate_midparent_height_cm(adj_mother_cm, adj_father_cm)
-            midparent_coef = get_midparent_coefficient(gender, rounded_age_val)
-            intersect_val = get_intersect(gender, rounded_age_val)
-            predicted_height_cm = calculate_predicted_adult_height_cm(
-                intersect_val, height_coef, standing_height_cm, weight_coef, body_mass_kg, midparent_coef, midparent_height_cm
-            )
+            body_mass_lbs = kg_to_lbs(body_mass_kg)
+            standing_height_inches = cm_to_inches(standing_height_cm)
+            height_coefficient = get_height_coefficient(standing_height_inches)
+            weight_coefficient = get_weight_coefficient(body_mass_lbs)
+            mothers_height_inches = cm_to_inches(mothers_height_cm)
+            adjusted_mother_height = adjust_mother_height_inches(mothers_height_inches)
+            adjusted_mother_height_cm = inches_to_cm(adjusted_mother_height)
+            fathers_height_inches = cm_to_inches(fathers_height_cm)
+            adjusted_father_height = adjust_father_height_inches(fathers_height_inches)
+            adjusted_father_height_cm = inches_to_cm(adjusted_father_height)
+            midparent_height_cm = calculate_midparent_height_cm(adjusted_mother_height_cm, adjusted_father_height_cm)
+            midparent_coefficient = get_midparent_coefficient(midparent_height_cm)
+            intersect_val = get_intersect(height_coefficient, weight_coefficient, midparent_coefficient)
+            predicted_height_cm = calculate_predicted_adult_height_cm(intersect_val)
             percent_predicted_height = calculate_percent_predicted_height(standing_height_cm, predicted_height_cm)
-            biological_age_val = calculate_biological_age(gender, percent_predicted_height, sa_df)
-            ba_ca_val = calculate_ba_ca(chronological_age_val, biological_age_val)
+            biological_age_val = calculate_biological_age(percent_predicted_height)
+            ba_ca_val = calculate_ba_ca(biological_age_val, chronological_age_val)
             timing_val = calculate_timing(ba_ca_val)
             alt_timing_val = calculate_alt_timing(ba_ca_val)
             maturity_status_val = calculate_maturity_status(percent_predicted_height)
