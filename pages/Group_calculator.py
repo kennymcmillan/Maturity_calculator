@@ -1,4 +1,4 @@
-# First create a complete version of the code
+
 
 import streamlit as st
 import pandas as pd
@@ -127,19 +127,28 @@ if uploaded_file is not None:
             mothers_height_cm = float(row["Mother's Height (cm)"])
             fathers_height_cm = float(row["Father's Height (cm)"])
 
-            # Calculate Values
+            # Calculate initial age values
             chronological_age_val = chronological_age(dob, test_date)
             rounded_age_val = rounded_age(chronological_age_val)
+            
+            # Convert measurements
             body_mass_lbs = kg_to_lbs(body_mass_kg)
             standing_height_inches = cm_to_inches(standing_height_cm)
-            height_coefficient = get_height_coefficient(standing_height_inches)
-            weight_coefficient = get_weight_coefficient(body_mass_lbs)
+            
+            # Calculate coefficients with age
+            height_coefficient = get_height_coefficient(standing_height_inches, rounded_age_val)
+            weight_coefficient = get_weight_coefficient(body_mass_lbs, rounded_age_val)
+            
+            # Process parent heights
             mothers_height_inches = cm_to_inches(mothers_height_cm)
             adjusted_mother_height = adjust_mother_height_inches(mothers_height_inches)
             adjusted_mother_height_cm = inches_to_cm(adjusted_mother_height)
+            
             fathers_height_inches = cm_to_inches(fathers_height_cm)
             adjusted_father_height = adjust_father_height_inches(fathers_height_inches)
             adjusted_father_height_cm = inches_to_cm(adjusted_father_height)
+            
+            # Calculate predictions and status
             midparent_height_cm = calculate_midparent_height_cm(adjusted_mother_height_cm, adjusted_father_height_cm)
             midparent_coefficient = get_midparent_coefficient(midparent_height_cm)
             intersect_val = get_intersect(height_coefficient, weight_coefficient, midparent_coefficient)
@@ -150,6 +159,8 @@ if uploaded_file is not None:
             timing_val = calculate_timing(ba_ca_val)
             alt_timing_val = calculate_alt_timing(ba_ca_val)
             maturity_status_val = calculate_maturity_status(percent_predicted_height)
+            
+            # Calculate bounds
             lower_50 = calculate_lower_bound_50(predicted_height_cm, rounded_age_val)
             upper_50 = calculate_upper_bound_50(predicted_height_cm, rounded_age_val)
             lower_90 = calculate_lower_bound_90(predicted_height_cm, rounded_age_val)
