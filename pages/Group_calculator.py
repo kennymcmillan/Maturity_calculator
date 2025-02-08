@@ -256,6 +256,28 @@ errors_df, sa_df, metrics_df = load_reference_data()
 # -----------------------------
 st.title("Group Maturation Calculator")
 
+st.sidebar.markdown("## Group Upload Template")
+st.sidebar.markdown("""
+Download this template to use for your group upload.  
+Please upload as a CSV file, and dates should be in **dd/mm/yyyy** format.
+""")
+
+# Provide a button to download the template
+template_path = "Group_template.csv"
+try:
+    with open(template_path, "rb") as f:
+        st.sidebar.download_button(
+            label="Download Group Template",
+            data=f,
+            file_name="Group_template.csv",
+            mime="text/csv"
+        )
+except FileNotFoundError:
+    st.sidebar.error("Template file not found. Please check the directory.")
+
+# File uploader for group data
+uploaded_file = st.sidebar.file_uploader("Upload Your Group CSV", type=["csv"])
+
 uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 if uploaded_file is not None:
     # Force "Name" to be read as string
