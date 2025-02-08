@@ -111,22 +111,33 @@ st.markdown('<h1 class="main-header">Group Calculator</h1>', unsafe_allow_html=T
 uploaded_file = st.file_uploader("Upload Completed Template", type=["xlsx"])
 
 if uploaded_file:
-    # Read the uploaded file
-    df = pd.read_excel(uploaded_file)
+    # Read the uploaded file without auto-parsing dates
+    df = pd.read_excel(uploaded_file, dtype=str)
+
+    # Show column names for debugging
+    st.write("### First few rows of uploaded file (raw):")
+    st.dataframe(df.head())
 
     # Perform Calculations for Each Individual
     results = []
     for index, row in df.iterrows():
         try:
-            # Read the input data from the uploaded Excel file
+            # Ensure correct mapping of Date of Birth and Test Date
             name = row["Name"]
             gender = row["Gender"]
-            dob = pd.to_datetime(row["Date of Birth"], dayfirst=True)  # Convert dd-mm-yyyy to datetime
-            test_date = pd.to_datetime(row["Test Date"], dayfirst=True)  # Convert dd-mm-yyyy to datetime
-            body_mass_kg = row["Body Mass (kg)"]
-            standing_height_cm = row["Standing Height (cm)"]
-            mothers_height_cm = row["Mother's Height (cm)"]
-            fathers_height_cm = row["Father's Height (cm)"]
+
+            # Convert dates explicitly
+            dob = pd.to_datetime(row["Date of Birth"], format="%d-%m-%Y", errors="coerce")
+            test_date = pd.to_datetime(row["Test Date"], format="%d-%m-%Y", errors="coerce")
+
+            # Check if any dates failed conversion
+            if pd.isna(dob) or pd.isna(test_date):
+                st.warning(f"Invalid date format in row {index+1}: DOB={row['Date of Birth']}, Test Date={row['Test Date']}")
+
+            body_mass_kg = float(row["Body Mass (kg)"])
+            standing_height_cm = float(row["Standing Height (cm)"])
+            mothers_height_cm = float(row["Mother's Height (cm)"])
+            fathers_height_cm = float(row["Father's Height (cm)"])
 
             # Perform Calculations
             chronological_age_val = chronological_age(dob, test_date)
@@ -158,8 +169,8 @@ if uploaded_file:
             results.append({
                 "Name": name,
                 "Gender": gender,
-                "Date of Birth": dob.strftime('%Y-%m-%d'),  # Ensure correct output formatting
-                "Test Date": test_date.strftime('%Y-%m-%d'),  # Ensure correct output formatting
+                "Date of Birth": dob.strftime('%Y-%m-%d') if pd.notna(dob) else "Invalid Date",
+                "Test Date": test_date.strftime('%Y-%m-%d') if pd.notna(test_date) else "Invalid Date",
                 "Body Mass (kg)": body_mass_kg,
                 "Standing Height (cm)": standing_height_cm,
                 "Mother's Height (cm)": mothers_height_cm,
