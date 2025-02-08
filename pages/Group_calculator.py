@@ -99,11 +99,23 @@ if uploaded_file:
     st.write("### Uploaded Data Preview:")
     st.dataframe(df.head())  # Show first few rows for validation
 
-    # Parse dates explicitly for dd/mm/yyyy format and convert to yyyy-mm-dd
-    df["Date of Birth"] = pd.to_datetime(df["Date of Birth"], format="%d/%m/%Y", errors="coerce")
-    df["Test Date"] = pd.to_datetime(df["Test Date"], format="%d/%m/%Y", errors="coerce")
+    # Explicit date parsing for dd/mm/yyyy format
+    try:
+        df["Date of Birth"] = pd.to_datetime(df["Date of Birth"], format="%d/%m/%Y", errors="coerce")
+        df["Test Date"] = pd.to_datetime(df["Test Date"], format="%d/%m/%Y", errors="coerce")
+    except Exception as e:
+        st.error(f"Error parsing dates: {e}")
+        st.stop()
 
-    # Validate parsed dates and convert them to yyyy-mm-dd for calculations
+    # Check for any rows with invalid dates
+    if df["Date of Birth"].isna().any() or df["Test Date"].isna().any():
+        st.warning("Some rows have invalid date formats. These rows will be skipped.")
+        st.write("Invalid Rows:")
+        st.dataframe(df[df["Date of Birth"].isna() | df["Test Date"].isna()])
+        # Drop rows with invalid dates
+        df = df.dropna(subset=["Date of Birth", "Test Date"])
+
+    # Convert dates to yyyy-mm-dd format for calculations
     df["Date of Birth"] = df["Date of Birth"].dt.strftime("%Y-%m-%d")
     df["Test Date"] = df["Test Date"].dt.strftime("%Y-%m-%d")
 
