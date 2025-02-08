@@ -277,8 +277,6 @@ except FileNotFoundError:
 
 # File uploader for group data
 uploaded_file = st.sidebar.file_uploader("Upload Your Group CSV", type=["csv"])
-
-uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 if uploaded_file is not None:
     # Force "Name" to be read as string
     df = pd.read_csv(uploaded_file, dtype={'Name': str})
