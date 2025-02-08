@@ -1,9 +1,6 @@
-
-
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-
 
 def chronological_age(dob, test_date):
     """Excel: =IF(C2="","",YEARFRAC(C2,D2))"""
@@ -140,7 +137,7 @@ def get_intersect(gender, rounded_age):
 
 def calculate_predicted_adult_height_cm(intersect, height_coef, height_cm, weight_coef, weight_kg, midparent_coef, midparent_cm):
     """Excel: =X2+(J2*I2)+(L2*G2)+(V2*U2)"""
-    if any(pd.isna([intersect, height_coef, height_cm, weight_coef, weight_kg, midparent_coef, midparent_cm])):
+    if any(pd.isna(x) for x in [intersect, height_coef, height_cm, weight_coef, weight_kg, midparent_coef, midparent_cm]):
         return ""
     
     return intersect + (height_coef * height_cm) + (weight_coef * weight_kg) + (midparent_coef * midparent_cm)
@@ -240,17 +237,16 @@ def calculate_upper_bound_50(predicted_height_cm, rounded_age):
         return ""
     
     try:
-        # Find the closest age match in errors table for rounded_age + 0.5
         target_age = rounded_age + 0.5
         closest_age_idx = errors_df['Age'].searchsorted(target_age)
         
         if closest_age_idx >= len(errors_df):
-            return predicted_height_cm  # Return original value if no match found
+            return predicted_height_cm
             
-        error_value = errors_df.iloc[closest_age_idx][0.5]  # 0.5 is the column name for 50% bounds
+        error_value = errors_df.iloc[closest_age_idx][0.5]
         return predicted_height_cm + error_value
     except:
-        return predicted_height_cm  # Return original value if any error occurs
+        return predicted_height_cm
 
 def calculate_lower_bound_90(predicted_height_cm, rounded_age):
     """Excel: =Y2 - IFERROR(INDEX(Errors!$C$2:$C$100, MATCH(F2 + 0.5, Errors!$A$2:$A$100, 0)), 0)"""
@@ -258,36 +254,33 @@ def calculate_lower_bound_90(predicted_height_cm, rounded_age):
         return ""
     
     try:
-        # Find the closest age match in errors table for rounded_age + 0.5
         target_age = rounded_age + 0.5
         closest_age_idx = errors_df['Age'].searchsorted(target_age)
         
         if closest_age_idx >= len(errors_df):
-            return predicted_height_cm  # Return original value if no match found
+            return predicted_height_cm
             
         error_value = errors_df.iloc[closest_age_idx][0.9]  # 0.9 is the column name for 90% bounds
         return predicted_height_cm - error_value
     except:
-        return predicted_height_cm  # Return original value if any error occurs
+        return predicted_height_cm
 
-# Implement Upper bound 90% calculation
 def calculate_upper_bound_90(predicted_height_cm, rounded_age):
     """Excel: =Y2 + IFERROR(INDEX(Errors!$C$2:$C$100, MATCH(F2 + 0.5, Errors!$A$2:$A$100, 0)), 0)"""
     if pd.isna(predicted_height_cm) or pd.isna(rounded_age) or predicted_height_cm == "" or rounded_age == "":
         return ""
     
     try:
-        # Find the closest age match in errors table for rounded_age + 0.5
         target_age = rounded_age + 0.5
         closest_age_idx = errors_df['Age'].searchsorted(target_age)
         
         if closest_age_idx >= len(errors_df):
-            return predicted_height_cm  # Return original value if no match found
+            return predicted_height_cm
             
-        error_value = errors_df.iloc[closest_age_idx][0.9]  # 0.9 is the column name for 90% bounds
+        error_value = errors_df.iloc[closest_age_idx][0.9]
         return predicted_height_cm + error_value
     except:
-        return predicted_height_cm  # Return original value if any error occurs
+        return predicted_height_cm
 
 #####################################################################################
 
@@ -376,8 +369,8 @@ st.markdown('<h1 class="main-header">Group Calculator</h1>', unsafe_allow_html=T
 uploaded_file = st.file_uploader("Upload your CSV file", type=['csv'])
 
 if uploaded_file is not None:
-    # Read CSV
-    df = pd.read_csv(uploaded_file)
+    # Read CSV and force the Name column to be a string
+    df = pd.read_csv(uploaded_file, dtype={'Name': str})
     
     # Validate and fix dates
     df = validate_and_fix_dates(df)
@@ -441,10 +434,10 @@ if uploaded_file is not None:
             maturity_status_val = calculate_maturity_status(percent_predicted_height)
             
             # Calculate bounds
-            lower_50 = calculate_lower_bound_50(predicted_height_cm, rounded_age_val, errors_df)
-            upper_50 = calculate_upper_bound_50(predicted_height_cm, rounded_age_val, errors_df)
-            lower_90 = calculate_lower_bound_90(predicted_height_cm, rounded_age_val, errors_df)
-            upper_90 = calculate_upper_bound_90(predicted_height_cm, rounded_age_val, errors_df)
+            lower_50 = calculate_lower_bound_50(predicted_height_cm, rounded_age_val)
+            upper_50 = calculate_upper_bound_50(predicted_height_cm, rounded_age_val)
+            lower_90 = calculate_lower_bound_90(predicted_height_cm, rounded_age_val)
+            upper_90 = calculate_upper_bound_90(predicted_height_cm, rounded_age_val)
 
             # Append Results
             results.append({
