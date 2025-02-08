@@ -90,20 +90,19 @@ uploaded_file = st.file_uploader("Upload Completed Template", type=["xlsx"])
 
 if uploaded_file:
     # Read the uploaded file
-    df = pd.read_excel(uploaded_file, dtype=str)  # Force all fields as strings
+    df = pd.read_excel(uploaded_file, dtype=str)  # Treat all columns as strings initially
     st.write("### Uploaded Data Preview:")
     st.dataframe(df.head())  # Show first few rows for validation
 
-    # Parse dates explicitly for dd/mm/yyyy format
+    # Parse dates explicitly for dd/mm/yyyy format and convert to yyyy-mm-dd
     df["Date of Birth"] = pd.to_datetime(df["Date of Birth"], format="%d/%m/%Y", errors="coerce")
     df["Test Date"] = pd.to_datetime(df["Test Date"], format="%d/%m/%Y", errors="coerce")
 
-    # Swap columns if needed
-    if (df["Date of Birth"] > df["Test Date"]).any():
-        st.warning("Swapping 'Date of Birth' and 'Test Date' columns due to incorrect mapping.")
-        df["Date of Birth"], df["Test Date"] = df["Test Date"], df["Date of Birth"]
+    # Convert dates to yyyy-mm-dd for calculations
+    df["Date of Birth"] = df["Date of Birth"].dt.strftime("%Y-%m-%d")
+    df["Test Date"] = df["Test Date"].dt.strftime("%Y-%m-%d")
 
-    # Validate the corrected dates
+    # Validate corrected dates
     st.write("### Corrected Data Preview:")
     st.dataframe(df.head())
 
@@ -115,8 +114,8 @@ if uploaded_file:
             name = row["Name"]
             gender = row["Gender"]
 
-            dob = row["Date of Birth"]
-            test_date = row["Test Date"]
+            dob = pd.to_datetime(row["Date of Birth"], format="%Y-%m-%d")
+            test_date = pd.to_datetime(row["Test Date"], format="%Y-%m-%d")
 
             # Validate the parsed dates
             if pd.isna(dob) or pd.isna(test_date):
