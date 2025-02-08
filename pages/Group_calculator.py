@@ -226,6 +226,19 @@ def calculate_upper_bound_90(predicted_height_cm, rounded_age_val):
     except:
         return predicted_height_cm
 
+def validate_and_fix_dates(df):
+    def validate_dates(row):
+        dob = pd.to_datetime(row['Date of Birth'], errors='coerce')
+        test_date = pd.to_datetime(row['Test Date'], errors='coerce')
+        if pd.isna(dob) or pd.isna(test_date):
+            return pd.Series({'Date of Birth': dob, 'Test Date': test_date})
+        if test_date < dob:
+            return pd.Series({'Date of Birth': test_date, 'Test Date': dob})
+        return pd.Series({'Date of Birth': dob, 'Test Date': test_date})
+    
+    df[['Date of Birth', 'Test Date']] = df.apply(validate_dates, axis=1)
+    return df
+
 # -----------------------------
 # Load Reference Data (cached)
 # -----------------------------
@@ -247,6 +260,8 @@ uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 if uploaded_file is not None:
     # Force "Name" to be read as string
     df = pd.read_csv(uploaded_file, dtype={'Name': str})
+
+    df = validate_and_fix_dates(df)
     
     results = []
     for idx, row in df.iterrows():
