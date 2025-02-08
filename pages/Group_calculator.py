@@ -118,10 +118,11 @@ if uploaded_file:
     results = []
     for index, row in df.iterrows():
         try:
+            # Read the input data from the uploaded Excel file
             name = row["Name"]
             gender = row["Gender"]
-            dob = pd.to_datetime(row["Date of Birth"])
-            test_date = pd.to_datetime(row["Test Date"])
+            dob = pd.to_datetime(row["Date of Birth"], dayfirst=True)  # Convert dd-mm-yyyy to datetime
+            test_date = pd.to_datetime(row["Test Date"], dayfirst=True)  # Convert dd-mm-yyyy to datetime
             body_mass_kg = row["Body Mass (kg)"]
             standing_height_cm = row["Standing Height (cm)"]
             mothers_height_cm = row["Mother's Height (cm)"]
@@ -157,8 +158,8 @@ if uploaded_file:
             results.append({
                 "Name": name,
                 "Gender": gender,
-                "Date of Birth": dob.strftime('%Y-%m-%d'),
-                "Test Date": test_date.strftime('%Y-%m-%d'),
+                "Date of Birth": dob.strftime('%Y-%m-%d'),  # Ensure correct output formatting
+                "Test Date": test_date.strftime('%Y-%m-%d'),  # Ensure correct output formatting
                 "Body Mass (kg)": body_mass_kg,
                 "Standing Height (cm)": standing_height_cm,
                 "Mother's Height (cm)": mothers_height_cm,
