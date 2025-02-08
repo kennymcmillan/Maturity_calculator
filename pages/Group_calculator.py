@@ -30,8 +30,6 @@ from modules import (
 
 st.set_page_config(layout="wide")
 
-############################################################################
-
 # Define LTAD brand colors
 DARK_BLUE = "#0F1B34"
 GREEN = "#23FF00"
@@ -57,10 +55,6 @@ st.markdown(
             color: {GREEN};
             margin-bottom: 15px;
         }}
-        .result-text {{
-            font-size: 18px;
-            margin-bottom: 10px;
-        }}
         .stDownloadButton > button {{
             background-color: {GREEN} !important;
             color: {DARK_BLUE} !important;
@@ -77,20 +71,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-############################################################################
-
-# Load shared data
-@st.cache_data
-def load_all_data():
-    errors_df = pd.read_excel('Maturation_calculator.xlsx', sheet_name='Errors')
-    sa_df = pd.read_excel('Maturation_calculator.xlsx', sheet_name='SA')
-    metrics_df = pd.read_excel('Maturation_calculator.xlsx', sheet_name='Metric coefficients')
-    return errors_df, sa_df, metrics_df
-
-errors_df, sa_df, metrics_df = load_all_data()
-
-############################################################################
-
 # Sidebar: Group Template
 st.sidebar.header("Group Calculator")
 st.sidebar.write("Download this template to add your data for many individuals.")
@@ -102,8 +82,6 @@ with open("Group_template.xlsx", "rb") as template_file:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
-############################################################################
-
 # Page Title
 st.markdown('<h1 class="main-header">Group Calculator</h1>', unsafe_allow_html=True)
 
@@ -111,29 +89,29 @@ st.markdown('<h1 class="main-header">Group Calculator</h1>', unsafe_allow_html=T
 uploaded_file = st.file_uploader("Upload Completed Template", type=["xlsx"])
 
 if uploaded_file:
-    # Read the uploaded file without auto-parsing dates
-    df = pd.read_excel(uploaded_file, dtype=str)
-
-    # Show column names for debugging
-    st.write("### First few rows of uploaded file (raw):")
-    st.dataframe(df.head())
+    # Read the uploaded file
+    df = pd.read_excel(uploaded_file, dtype=str)  # Force all fields as strings
+    st.write("### Uploaded Data Preview:")
+    st.dataframe(df.head())  # Show first few rows for validation
 
     # Perform Calculations for Each Individual
     results = []
     for index, row in df.iterrows():
         try:
-            # Ensure correct mapping of Date of Birth and Test Date
+            # Read the input data from the uploaded Excel file
             name = row["Name"]
             gender = row["Gender"]
 
-            # Convert dates explicitly
+            # Explicitly parse the dates with dayfirst=True
             dob = pd.to_datetime(row["Date of Birth"], format="%d-%m-%Y", errors="coerce")
             test_date = pd.to_datetime(row["Test Date"], format="%d-%m-%Y", errors="coerce")
 
-            # Check if any dates failed conversion
+            # Validate dates
             if pd.isna(dob) or pd.isna(test_date):
-                st.warning(f"Invalid date format in row {index+1}: DOB={row['Date of Birth']}, Test Date={row['Test Date']}")
+                st.warning(f"Invalid date format in row {index + 1}: DOB={row['Date of Birth']}, Test Date={row['Test Date']}")
+                continue  # Skip this row
 
+            # Parse numerical fields
             body_mass_kg = float(row["Body Mass (kg)"])
             standing_height_cm = float(row["Standing Height (cm)"])
             mothers_height_cm = float(row["Mother's Height (cm)"])
@@ -169,8 +147,8 @@ if uploaded_file:
             results.append({
                 "Name": name,
                 "Gender": gender,
-                "Date of Birth": dob.strftime('%Y-%m-%d') if pd.notna(dob) else "Invalid Date",
-                "Test Date": test_date.strftime('%Y-%m-%d') if pd.notna(test_date) else "Invalid Date",
+                "Date of Birth": dob.strftime('%Y-%m-%d'),
+                "Test Date": test_date.strftime('%Y-%m-%d'),
                 "Body Mass (kg)": body_mass_kg,
                 "Standing Height (cm)": standing_height_cm,
                 "Mother's Height (cm)": mothers_height_cm,
