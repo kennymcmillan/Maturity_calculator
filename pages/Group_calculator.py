@@ -349,6 +349,15 @@ def validate_and_fix_dates(df):
     df[['Date of Birth', 'Test Date']] = df.apply(validate_dates, axis=1)
     return df
 
+@st.cache_data
+def load_all_data():
+    errors_df = pd.read_excel('Maturation_calculator.xlsx', sheet_name='Errors')
+    sa_df = pd.read_excel('Maturation_calculator.xlsx', sheet_name='SA')
+    metrics_df = pd.read_excel('Maturation_calculator.xlsx', sheet_name='Metric coefficients')
+    return errors_df, sa_df, metrics_df
+
+errors_df, sa_df, metrics_df = load_all_data()
+
 # Sidebar: Group Template
 st.sidebar.header("Group Calculator")
 st.sidebar.write("Download this template to add your data for many individuals.")
@@ -414,19 +423,28 @@ if uploaded_file is not None:
             midparent_coefficient = get_midparent_coefficient(gender, rounded_age_val)
 
             intersect_val = get_intersect(gender, rounded_age_val)
-            predicted_height_cm = calculate_predicted_adult_height_cm(intersect_val)
+            predicted_height_cm = calculate_predicted_adult_height_cm(
+                                        intersect_val,
+                                        height_coefficient,
+                                        standing_height_cm,
+                                        weight_coefficient,
+                                        body_mass_kg,
+                                        midparent_coefficient,
+                                        midparent_height_cm
+                                    )
+
             percent_predicted_height = calculate_percent_predicted_height(standing_height_cm, predicted_height_cm)
-            biological_age_val = calculate_biological_age(percent_predicted_height)
+            biological_age_val = calculate_biological_age(gender, percent_predicted_height, sa_df)
             ba_ca_val = calculate_ba_ca(biological_age_val, chronological_age_val)
             timing_val = calculate_timing(ba_ca_val)
             alt_timing_val = calculate_alt_timing(ba_ca_val)
             maturity_status_val = calculate_maturity_status(percent_predicted_height)
             
             # Calculate bounds
-            lower_50 = calculate_lower_bound_50(predicted_height_cm, rounded_age_val)
-            upper_50 = calculate_upper_bound_50(predicted_height_cm, rounded_age_val)
-            lower_90 = calculate_lower_bound_90(predicted_height_cm, rounded_age_val)
-            upper_90 = calculate_upper_bound_90(predicted_height_cm, rounded_age_val)
+            lower_50 = calculate_lower_bound_50(predicted_height_cm, rounded_age_val, errors_df)
+            upper_50 = calculate_upper_bound_50(predicted_height_cm, rounded_age_val, errors_df)
+            lower_90 = calculate_lower_bound_90(predicted_height_cm, rounded_age_val, errors_df)
+            upper_90 = calculate_upper_bound_90(predicted_height_cm, rounded_age_val, errors_df)
 
             # Append Results
             results.append({
